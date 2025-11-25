@@ -23,6 +23,7 @@ data/*.xlsx
 # ------------------------------------
 # JANGAN PERNAH mengunggah kunci API atau rahasia ke Git.
 .env
+.streamlit/secrets.toml  <-- PASTIKAN INI ADA
 config.py
 *secrets.json
 .streamlit/

@@ -7,19 +7,24 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 import logging
+import streamlit as st
 
 logger = logging.getLogger(__name__)
 
 # --- Setup API Key ---
 def load_api_key():
-    """Menggunakan API key yang fixed."""
+    """Mengambil API key dari Streamlit Secrets atau Environment Variable."""
     
-    key = "AIzaSyD6eBZ5XrPZ9MN9xC2XDDcFciWaPQG2Hf8" # hanif
-
-    os.environ["GOOGLE_API_KEY"] = key
-    print("API key sudah diset secara otomatis ✔")
-
-    return key
+    # 1. Coba ambil dari Streamlit Secrets
+    if "GOOGLE_API_KEY" in st.secrets:
+        os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+        logger.info("GOOGLE_API_KEY berhasil dimuat dari Streamlit Secrets.")
+    
+    # 2. Jika tidak ada di Streamlit Secrets, cek environment variable
+    elif "GOOGLE_API_KEY" not in os.environ:
+        # Jika Anda menjalankan di lingkungan non-Streamlit, ini akan gagal,
+        # tetapi di Streamlit Cloud atau lingkungan lokal yang dikonfigurasi, ini aman.
+        raise EnvironmentError("GOOGLE_API_KEY tidak ditemukan di Streamlit Secrets maupun Environment Variables.")
 
 # --- Pydantic Schemas ---
 class HybridEvaluation(BaseModel):
