@@ -60,6 +60,7 @@ class IntegratedRecommender:
 
         # 4. Urutkan dan ambil top-n
         results = results.sort_values('final_score', ascending=False)
-        recommended = results[['Name','Brand','Category','Rating','ReviewCount','final_score','Description']].head(n)
+        # recommended = results[['Name','Brand','Category','Rating','ReviewCount','final_score','Description']].head(n)
+        recommended = results[['Name','Brand','Category','Rating','ReviewCount','final_score','Description','ImageURL']].head(n)
         
         return recommended
