@@ -15,3 +15,9 @@
 - run code
     streamlit run app_streamlit.py
     python -m streamlit run app_streamlit.py
+
+versi:
+- streamlit run app_streamlit.py = migrasi pertama dari colab
+- streamlit run app_streamlit2.py = base code UI (Template)
+- streamlit run app_streamlit3.py = UI/UX Ekspresif
+- streamlit run app_streamlit4.py = UI/UX like Shopee
