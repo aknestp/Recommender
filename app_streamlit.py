@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
 import os
+import time
 
 # Import modul lokal dari folder src
 from src.data_loader import load_local_data
@@ -68,7 +69,7 @@ def display_evaluation_ui(evaluation: HybridEvaluation):
 def show_product_popup(product_data, score=None):
     """Menampilkan modal/popup detail produk."""
     
-    # 1. Gambar Besar dengan Box & Fixed Size
+    # 1. Gambar Besar dengan Box
     img_url = str(product_data.get('ImageURL', '')).split('|')[0]
     
     if img_url and img_url != 'nan' and pd.notna(img_url):
@@ -136,7 +137,11 @@ def show_product_popup(product_data, score=None):
     
     with col_buy:
         if st.button("🛍️ Buy Now", type="primary", use_container_width=True, key=f"popup_buy_{product_data.get('Name')}"):
-            st.toast("Mengarahkan ke halaman pembayaran... 💳", icon="🚀")
+            # Efek loading dan sukses belanja
+            with st.spinner("Memproses pembayaran..."):
+                time.sleep(1.5)
+            st.balloons()
+            st.success("Pembayaran Berhasil! Terima kasih telah berbelanja di clickmart.")
 
     st.divider()
 
@@ -161,7 +166,7 @@ def show_product_popup(product_data, score=None):
 
 def render_product_card(row, full_df=None, prefix=""):
     """Fungsi helper untuk merender kartu produk dengan ukuran fixed."""
-    # Kartu Produk (Akan berwarna Abu-abu via CSS)
+    # Kartu Produk (Akan berwarna Abu-abu via CSS global)
     with st.container(border=True):
         # 1. FIXED HEIGHT IMAGE (150px)
         img_url = str(row.get('ImageURL', '')).split('|')[0].strip() if pd.notna(row.get('ImageURL')) else None
@@ -258,7 +263,6 @@ def page_recommender(df, recommender, llm_tools, metrics, cf_recommender):
     with st.container(border=True):
         st.markdown('<span id="header-marker"></span>', unsafe_allow_html=True) # !!! MARKER PENTING !!!
         
-        # PERBAIKAN: Menambahkan c_logo ke variabel unpacking
         c_back, c_logo, c_search, c_num, c_sbtn, c_ebtn = st.columns([0.6, 1.5, 3.5, 1, 0.6, 1.8], gap="small")
         
         # 1. Tombol Back
@@ -273,11 +277,11 @@ def page_recommender(df, recommender, llm_tools, metrics, cf_recommender):
                 <div style='
                     font-size: 24px; 
                     font-weight: 900; 
-                    color: #385F8C; 
+                    color: #FFFFFF; 
                     white-space: nowrap;
                     margin-top: 5px;
                 '>
-                    5uper Market
+                    clickmart
                 </div>
             """, unsafe_allow_html=True)
 
@@ -422,7 +426,7 @@ def page_recommender(df, recommender, llm_tools, metrics, cf_recommender):
     st.markdown("""
         <br>
         <div style='background-color: #385F8C; color: #FFFFFF; padding: 20px; text-align: center; border-radius: 10px;'>
-            <p style='margin:0; font-weight:bold;'>5uper Market AI Recommender</p>
+            <p style='margin:0; font-weight:bold;'>clickmart AI Recommender</p>
             <p style='font-size: 0.8rem; margin:0;'>Ditenagai oleh Streamlit & Google Gemini LLM</p>
             <p style='font-size: 0.8rem; margin:0;'>Developed by Kelompok 5 DSAI CAMP3</p>
         </div>
@@ -444,17 +448,17 @@ def page_home(df, cf_recommender):
                 <div style='
                     font-size: 30px; 
                     font-weight: 900; 
-                    color: #385F8C; 
+                    color: #FFFFFF; 
                     margin-top: -5px;
                     white-space: nowrap;
                     cursor: pointer;
                 '>
-                    5uper Market
+                    clickmart
                 </div>
             """, unsafe_allow_html=True)
 
         with c_search:
-            search_input = st.text_input("Search", placeholder="Cari produk di 5uper Market...", label_visibility="collapsed")
+            search_input = st.text_input("Search", placeholder="Cari produk di clickmart...", label_visibility="collapsed")
 
         with c_btn:
             if st.button("🔍", key="search_home", use_container_width=True):
@@ -471,91 +475,56 @@ def page_home(df, cf_recommender):
         st.rerun()
 
     # --- Categories ---
-    st.markdown("### Shop with Categories")
-
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.subheader("🛍️ Shop by Categories")
+    
     categories = [
         {"name": "Skincare", "image": "https://i.pinimg.com/736x/4c/16/7c/4c167c5ac422efd13eba8e07d04274a7.jpg"},
         {"name": "Bodycare", "image": "https://i.pinimg.com/736x/bf/00/df/bf00df3d3cf4271cdb625a387936f90d.jpg"},
         {"name": "Haircare", "image": "https://i.pinimg.com/736x/02/d5/7f/02d57f094a70a0b5c6c1f7279b21a2d3.jpg"},
         {"name": "Make Up", "image": "https://i.pinimg.com/1200x/e4/14/34/e414342a7464892f646fe9baeee41c51.jpg"},
         {"name": "Others", "image": "https://i.pinimg.com/736x/2d/f3/c2/2df3c287f50c35de6d65d16ff225ebda.jpg"}
-]
+    ]
 
     cols = st.columns(5)
-
     for i, (col, category) in enumerate(zip(cols, categories)):
         with col:
-        # Container untuk seluruh card
             with st.container():
-            # Button yang benar-benar menutupi card
-                    if st.button(
-                    "⠀",  # Unicode empty character
-                    key=f"cat_btn_{i}",
-                    use_container_width=True
-                    ):
-                        st.session_state.selected_category = category["name"]
-                        st.session_state.search_triggered = True
-                        st.rerun()                          
-            
-            # Gambar dan text - diposisikan di belakang button
-            st.markdown(f"""
-            <div class="category-card-img">
-                <img src="{category['image']}" alt="{category['name']}" 
-                     style="width: 100%; height: 100px; object-fit: cover;">
-                <div class="category-label">{category['name']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+                if st.button("⠀", key=f"cat_btn_{i}", use_container_width=True):
+                    st.toast(f"Kategori {category['name']} dipilih! (Fitur Coming Soon)", icon="🚧")
+                
+                st.markdown(f"""
+                <div class="category-card-img">
+                    <img src="{category['image']}" style="width: 100%; height: 100px; object-fit: cover;">
+                    <div class="category-label">{category['name']}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown("""
-            <style>
-            .category-card-img {
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                margin-bottom: 10px;
-                transition: all 0.3s ease;
-                position: relative;
-            }
-
-            .category-card-img:hover {
-                box-shadow: 0 1px 10px rgba(255, 255, 255, 0.8);  /* Ini yang putih */
-                transform: translateY(-3px);
-            }
-
-            .category-label {
-                background: #385F8C;
-                color: white;
-                padding: 10px;
-                text-align: center;
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
-
-            /* Button yang menutupi seluruh card */
-            .stButton > button {
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                background: transparent !important;
-                border: none !important;
-                color: transparent !important;
-                z-index: 100 !important;
-                cursor: pointer !important;
-            }
-
-            .stButton > button:hover {
-                background: transparent !important;
-                border: none !important;
-            }
-
-            /* Container relatif untuk positioning */
-            div[data-testid="column"] > div:first-child {
-                position: relative !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    .category-card-img {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 10px;
+        position: relative;
+    }
+    .category-label {
+        background: #385F8C;
+        color: white;
+        padding: 5px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    div[data-testid="column"] button {
+        position: absolute !important;
+        z-index: 2 !important;
+        opacity: 0 !important;
+        height: 120px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -575,7 +544,7 @@ def page_home(df, cf_recommender):
 
     # --- Recommendations ---
     if cf_recommender:
-        recom_prods = cf_recommender.get_most_liked_products(top_n=15) # Gunakan most liked sementara
+        recom_prods = cf_recommender.get_most_liked_products(top_n=15)
         if not recom_prods.empty:
             display_grid(recom_prods, "❤️ Rekomendasi Untuk Anda", full_df=df, prefix="recom")
 
@@ -583,7 +552,7 @@ def page_home(df, cf_recommender):
     st.markdown("""
         <br><br>
         <div style='background-color: #385F8C; color: #FFFFFF; padding: 20px; text-align: center; border-radius: 10px;'>
-            <p style='margin:0; font-weight:bold;'>5uper Market AI Recommender</p>
+            <p style='margin:0; font-weight:bold;'>clickmart AI Recommender</p>
             <p style='font-size: 0.8rem; margin:0;'>Ditenagai oleh Streamlit & Google Gemini LLM</p>
             <p style='font-size: 0.8rem; margin:0;'>Developed by Kelompok 5 DSAI CAMP3</p>
         </div>
@@ -592,7 +561,7 @@ def page_home(df, cf_recommender):
 # --- Main Controller ---
 
 def main():
-    st.set_page_config(page_title="5uper Market", layout="wide")
+    st.set_page_config(page_title="clickmart", layout="wide")
 
     # --- CSS STYLE INJECTION ---
     st.markdown("""
@@ -608,43 +577,37 @@ def main():
         }
         
         /* 3. CARD CONTAINER (GREY #E9E9E9) - Default */
-        /* Semua container border (kartu produk) berwarna Abu-abu */
         [data-testid="stVerticalBlockBorderWrapper"] {
             background-color: #E9E9E9;
             border-color: #DDDDDD;
             border-radius: 10px;
         }
 
-        /* 4. HEADER CONTAINER (WHITE #FFFFFF) - DENGAN MARKER */
-        /* Gunakan selector :has() untuk menargetkan container yang punya id="header-marker" */
+        /* 4. HEADER CONTAINER (BLUE #385F8C) - DENGAN MARKER */
         [data-testid="stVerticalBlockBorderWrapper"]:has(#header-marker) {
-            background-color: #FFFFFF !important;
-            border: 1px solid #DDDDDD !important;
+            background-color: #385F8C !important;
+            border: 1px solid #385F8C !important;
         }
 
-        /* 5. TOMBOL DI HEADER (BLUE STYLE) */
-        /* Tombol di dalam header (container putih) harus Biru */
+        /* 5. TOMBOL DI HEADER (WHITE STYLE) */
         [data-testid="stVerticalBlockBorderWrapper"]:has(#header-marker) div[data-testid="stButton"] button {
             color: #385F8C !important;
             background-color: #FFFFFF !important;
             border: 1px solid #385F8C !important;
         }
         
-        /* Hover Effect Header Buttons */
         [data-testid="stVerticalBlockBorderWrapper"]:has(#header-marker) div[data-testid="stButton"] button:hover {
-            background-color: #385F8C !important;
-            color: #FFFFFF !important;
+            background-color: #f0f0f0 !important;
+            color: #2b4a70 !important;
         }
 
         /* 6. TOMBOL DI KARTU PRODUK (BLUE STYLE) */
-        /* Tombol di luar header (di kartu produk/default) harus Biru */
         [data-testid="stVerticalBlockBorderWrapper"]:not(:has(#header-marker)) div[data-testid="stButton"] button {
             color: #FFFFFF !important;
             background-color: #385F8C !important;
             border: none !important;
         }
         
-        /* Hover Effect Card Buttons */
         [data-testid="stVerticalBlockBorderWrapper"]:not(:has(#header-marker)) div[data-testid="stButton"] button:hover {
             background-color: #2b4a70 !important;
         }
