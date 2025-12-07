@@ -45,9 +45,11 @@ class CollaborativeFilteringRecommender:
         if 'ProdID' not in self.df.columns:
             self.df['ProdID'] = ['prod_' + str(i) for i in range(len(self.df))]
         self.df = self.df.drop_duplicates(subset=['ProdID']).reset_index(drop=True)
-        # Buat harga dummy 
+        # Buat harga dummy
         np.random.seed(self.random_seed)
-        self.df['Price'] = np.random.randint(50000, 500000, size=len(self.df)) logger.info(f"Dataset loaded: {self.df.shape}")
+        self.df['Price'] = np.random.randint(50000, 500000, size=len(self.df))
+        logger.info(f"Dataset loaded: {self.df.shape}")
+
     def _simulate_interactions(self):
         np.random.seed(self.random_seed)
         self.user_ids = [f"user_{i}" for i in range(self.num_users)]
@@ -84,6 +86,4 @@ class CollaborativeFilteringRecommender:
         most_liked = pd.merge(product_avg_ratings, self.df, on='ProdID', how='left')
         # Urutkan berdasarkan rata-rata rating tertinggi dan ambil top_n
         most_liked = most_liked.sort_values(by='average_rating', ascending=False)
-
         return most_liked.head(top_n)[['ProdID', 'Name', 'Brand', 'Category', 'average_rating', 'ReviewCount', 'ImageURL', 'Description', 'Price']]
-
