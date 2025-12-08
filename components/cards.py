@@ -3,6 +3,8 @@ import pandas as pd
 import time
 from components.logic import add_to_cart
 
+PLACEHOLDER_IMG = "https://via.placeholder.com/150?text=No+Image"
+
 def display_evaluation_ui(evaluation):
     score = evaluation.score
     if score >= 8: color, bg_color, icon = "#22c55e", "#dcfce7", "🌟 Excellent"
@@ -36,7 +38,9 @@ def show_product_popup(product_data, score=None):
         if img_url and img_url != 'nan' and pd.notna(img_url):
             st.markdown(f"""
                 <div style="height: 400px; width: 100%; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-                    <img src="{img_url}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    <img src="{img_url}" 
+                        onerror="this.onerror=null; this.src='{PLACEHOLDER_IMG}';"
+                        style="max-height: 100%; max-width: 100%; object-fit: contain;">
                 </div>
             """, unsafe_allow_html=True)
         else:
@@ -89,7 +93,9 @@ def render_product_card(row, full_df=None, prefix=""):
         if img_url:
             st.markdown(f"""
                 <div style="height: 150px; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 12px; border-radius: 8px;">
-                    <img src="{img_url}" style="height: 100%; width: 100%; object-fit: contain;">
+                    <img src="{img_url}" 
+                        onerror="this.onerror=null; this.src='{PLACEHOLDER_IMG}';"
+                        style="height: 100%; width: 100%; object-fit: contain;">
                 </div>
             """, unsafe_allow_html=True)
         else:

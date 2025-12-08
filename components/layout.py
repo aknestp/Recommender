@@ -32,6 +32,14 @@ def inject_custom_css(dark_mode):
             color: {primary_color} !important;
         }}
 
+        /* Tambahan: Mengubah warna Loading Bar di atas */
+        .stApp > header {{
+            background-color: transparent !important;
+        }}
+        .stApp .stDecoration {{
+            background-image: linear-gradient(90deg, #385F8C, #60a5fa);
+        }}
+
         /* 2. Card Container Style */
         [data-testid="stVerticalBlockBorderWrapper"] {{
             background-color: {card_bg};
