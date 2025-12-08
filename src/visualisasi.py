@@ -24,7 +24,15 @@ def run_eda(df: pd.DataFrame):
     plt.title("Top 10 Product Categories")
     plt.show()
 
-    # 3. Korelasi Antar Nilai Numerik
+    # 3. Distribusi Jumlah Review
+    plt.figure(figsize=(6,4))
+    sns.histplot(df['ReviewCount'], bins=30, kde=True)
+    plt.title("Distribusi Jumlah Review Produk")
+    plt.xlabel("Jumlah Review")
+    plt.ylabel("Frekuensi")
+    plt.show()
+
+    # 4. Korelasi Antar Nilai Numerik
     plt.figure(figsize=(5,3))
     sns.heatmap(df[['Rating','ReviewCount']].corr(), annot=True, cmap='Blues')
     plt.title("Korelasi antar variabel numerik")
