@@ -36,13 +36,13 @@ def show(df):
     st.markdown("<br>", unsafe_allow_html=True)
     c_prev, c_info, c_next = st.columns([1, 2, 1])
     with c_prev:
-        if st.button("Previous Page", disabled=(st.session_state.cat_page_number == 0), use_container_width=True):
+        if st.button("Previous Page", type="primary", disabled=(st.session_state.cat_page_number == 0), use_container_width=True):
             st.session_state.cat_page_number -= 1
             st.rerun()
     with c_info:
         st.markdown(f"<div style='text-align: center; padding-top: 10px;'>Page {st.session_state.cat_page_number + 1} of {total_pages}</div>", unsafe_allow_html=True)
     with c_next:
-        if st.button("Next Page", disabled=(st.session_state.cat_page_number >= total_pages - 1), use_container_width=True):
+        if st.button("Next Page", type="primary", disabled=(st.session_state.cat_page_number >= total_pages - 1), use_container_width=True):
             st.session_state.cat_page_number += 1
             st.rerun()
 

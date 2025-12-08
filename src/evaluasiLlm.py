@@ -39,7 +39,7 @@ class QueryInterpretation(BaseModel):
 
 # --- LLM Tools Class ---
 class LLMTools:
-    def __init__(self, model_name="gemini-2.5-flash", temperature=0):
+    def __init__(self, model_name="gemini-2.5-flash-lite", temperature=0):
         load_api_key()
         self.llm = ChatGoogleGenerativeAI(
             model=model_name,

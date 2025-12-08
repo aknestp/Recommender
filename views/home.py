@@ -12,7 +12,7 @@ def show(df, cf_recommender):
             if os.path.exists(LOGO_PATH):
                 st.image(LOGO_PATH, width=150)
             else:
-                st.markdown("<h3 style='color: #2563eb; margin-top: -5px;'>clickmart</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #385F8C; margin-top: -5px;'>clickmart</h3>", unsafe_allow_html=True)
 
         with c_search:
             search_input = st.text_input("Search", placeholder="Cari produk di clickmart...", label_visibility="collapsed")
@@ -67,7 +67,7 @@ def show(df, cf_recommender):
                 st.markdown(f"""
                 <div class="category-card-img" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); margin-bottom: 0px;">
                     <img src="{category['image']}" style="width: 100%; height: 100px; object-fit: cover;">
-                    <div style="background: #2563eb; color: white; padding: 10px; text-align: center; font-weight: 600; font-size: 0.9rem;">{category['name']}</div>
+                    <div style="background: #385F8C; color: white; padding: 10px; text-align: center; font-weight: 600; font-size: 0.9rem;">{category['name']}</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
