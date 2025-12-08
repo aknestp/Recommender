@@ -1,9 +1,16 @@
 import streamlit as st
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from components.layout import render_header, render_footer
 from components.cards import display_grid, display_evaluation_ui
+from src.visualisasi import (
+    plot_rating_distribution, 
+    plot_top_categories, 
+    plot_review_count_distribution, 
+    plot_correlation_heatmap
+)
 
 def show(df, recommender, llm_tools, metrics, cf_recommender):
     # 1. Render Header
@@ -113,18 +120,72 @@ def show(df, recommender, llm_tools, metrics, cf_recommender):
         recs = st.session_state['current_rekom']
         display_grid(recs, f"Hasil Pencarian ({len(recs)} Produk)", full_df=df, prefix="search")
 
-    # --- EDA Footer ---
+    # --- EDA Footer (GLOBAL SWITCH VERSION) ---
     st.markdown("<br><hr>", unsafe_allow_html=True)
     with st.expander("📊 Klik untuk membuka Analisis Data (EDA) & Statistik Dataset"):
         st.subheader("Exploratory Data Analysis")
+        
+        # === GLOBAL SWITCH ===
+        # Satu tombol untuk mengatur semua grafik
         c1, c2 = st.columns(2)
         with c1:
-            st.markdown("Distribusi Rating Produk")
-            fig1, ax1 = plt.subplots(figsize=(6, 4))
-            sns.histplot(df['Rating'], bins=10, kde=True, ax=ax1, color='#385F8C')
-            st.pyplot(fig1)
+            use_interactive = st.toggle("🔄 Aktifkan Mode Interaktif untuk Semua Grafik", value=False)
+        
         with c2:
-            st.markdown("Kategori Terpopuler")
-            st.bar_chart(df['Category'].value_counts().head(10), color='#385F8C')
+            if use_interactive:
+                st.markdown("ℹ️ *Mode Interaktif: Grafik bisa di-zoom, hover, dan tabel bisa di-sort.*")
+            else:
+                st.markdown("ℹ️ *Mode Statis: Tampilan standar laporan menggunakan Matplotlib.*")
+        
+        st.markdown("---")
+
+        # --- BARIS 1 ---
+        c1, c2 = st.columns(2)
+        
+        # FIG 1: Distribusi Rating
+        with c1:
+            st.markdown("**1. Distribusi Rating Produk**")
+            if use_interactive:
+                rating_counts = df['Rating'].round(1).value_counts().sort_index()
+                st.bar_chart(rating_counts, color='#385F8C')
+            else:
+                st.pyplot(plot_rating_distribution(df))
+
+        # FIG 2: Top Kategori
+        with c2:
+            st.markdown("**2. Kategori Terpopuler**")
+            if use_interactive:
+                top_cats = df['Category'].value_counts().head(10)
+                st.bar_chart(top_cats, color='#385F8C')
+            else:
+                st.pyplot(plot_top_categories(df))
+
+        st.markdown("<br>", unsafe_allow_html=True) # Spasi antar baris
+
+        # --- BARIS 2 ---
+        c3, c4 = st.columns(2)
+        
+        # FIG 3: Distribusi Review Count
+        with c3:
+            st.markdown("**3. Distribusi Jumlah Review**")
+            if use_interactive:
+                review_bins = pd.cut(df['ReviewCount'], bins=15).value_counts().sort_index()
+                review_bins.index = review_bins.index.astype(str)
+                st.bar_chart(review_bins, color='#385F8C')
+            else:
+                st.pyplot(plot_review_count_distribution(df))
+            
+        # FIG 4: Korelasi Heatmap
+        with c4:
+            st.markdown("**4. Korelasi Rating vs Review**")
+            if use_interactive:
+                numeric_df = df.select_dtypes(include=[np.number])
+                corr_matrix = numeric_df[['Rating', 'ReviewCount']].corr()
+                st.dataframe(
+                    corr_matrix.style.background_gradient(cmap='Blues'),
+                    use_container_width=True
+                )
+            else:
+                st.pyplot(plot_correlation_heatmap(df))
             
     render_footer()
