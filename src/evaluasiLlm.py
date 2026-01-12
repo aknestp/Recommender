@@ -65,7 +65,7 @@ class LLMTools:
             return out.product_name
         except Exception as e:
             logger.warning(f"LLM interpret error: {e} — falling back to raw query")
-            return query # Fallback
+            return out # Fallback
             
     def evaluate_recommendation_with_llm(self, df_rekom: pd.DataFrame) -> HybridEvaluation | None:
         """Mengevaluasi hasil rekomendasi menggunakan LLM."""
