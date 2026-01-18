@@ -10,6 +10,10 @@ from src.integratedRecommender import IntegratedRecommender
 from src.evaluasiLlm import LLMTools
 from src.rekom import CollaborativeFilteringRecommender
 
+st.write("CWD:", os.getcwd())
+st.write("ROOT:", os.listdir(os.getcwd()))
+st.write("DATA:", os.listdir(os.path.join(os.getcwd(), "data")))
+
 # Import UI Components & Views
 from components.layout import inject_custom_css, ICON_PATH, DATA_FILE_PATH
 from views import home, recommender, category
