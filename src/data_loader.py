@@ -1,4 +1,11 @@
-def load_local_data(file_path: str) -> pd.DataFrame:
+import pandas as pd
+import os
+import streamlit as st
+import logging
+
+logger = logging.getLogger(__name__)
+
+def load_local_data(file_path: str) -> "pd.DataFrame":
     """Memuat data dari file CSV lokal."""
     
     if not os.path.exists(file_path):
