@@ -2,7 +2,8 @@ import streamlit as st
 import os
 
 # --- Konfigurasi Global ---
-DATA_FILE_PATH = 'data/product_data.csv'
+BASE_DIR = os.getcwd()   # ROOT repo di Streamlit Cloud
+DATA_FILE_PATH = os.path.join(BASE_DIR, "data", "product_data.csv")
 LOGO_PATH = 'assets/logo.png' 
 ICON_PATH = 'assets/icon.png'
 
