@@ -1,6 +1,7 @@
 # src/data_loader.py
 
 import pandas as pd
+import streamlit as st
 import logging
 import os
 
@@ -12,13 +13,16 @@ def load_local_data(file_path: str) -> pd.DataFrame:
         logger.error(f"❌ File tidak ditemukan di: {file_path}")
         raise FileNotFoundError(f"Pastikan '{file_path}' ada di struktur proyek.")
         
+    st.write("CWD:", os.getcwd())
+    st.write("Files in CWD:", os.listdir(os.getcwd()))
+    st.write("Files in data:", os.listdir(os.path.join(os.getcwd(), "data")))
+    
     try:
-        df = pd.read_csv(file_path)
-        logger.info(f"Dataset berhasil dimuat! ✅ Ukuran dataset: {df.shape}")
-        return df
+        df = pd.read_csv(DATA_FILE_PATH)
+        st.write("CSV loaded! Shape:", df.shape)
     except Exception as e:
-        logger.error(f"Gagal memuat data: {e}")
-        return pd.DataFrame()
+        st.error(f"Gagal membaca CSV: {e}")
+            return pd.DataFrame()
 
 import pandas as pd
 import os
