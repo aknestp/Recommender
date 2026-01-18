@@ -14,17 +14,22 @@ logger = logging.getLogger(__name__)
 # --- Setup API Key ---
 def load_api_key():
     """Mengambil API key dari Streamlit Secrets atau Environment Variable."""
-    
-    # 1. Coba ambil dari Streamlit Secrets
-    if "GOOGLE_API_KEY" in st.secrets:
-        os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
-        logger.info("GOOGLE_API_KEY berhasil dimuat dari Streamlit Secrets.")
-    
-    # 2. Jika tidak ada di Streamlit Secrets, cek environment variable
-    elif "GOOGLE_API_KEY" not in os.environ:
-        # Jika Anda menjalankan di lingkungan non-Streamlit, ini akan gagal,
-        # tetapi di Streamlit Cloud atau lingkungan lokal yang dikonfigurasi, ini aman.
-        raise EnvironmentError("GOOGLE_API_KEY tidak ditemukan di Streamlit Secrets maupun Environment Variables.")
+    import streamlit as st
+    import os
+
+    # Ambil dari Streamlit Secrets (jika ada)
+    api_key = st.secrets.get("GOOGLE_API_KEY", None)
+
+    # Fallback ke environment variable
+    if not api_key:
+        api_key = os.getenv("GOOGLE_API_KEY")
+
+    if not api_key:
+        raise EnvironmentError(
+            "GOOGLE_API_KEY tidak ditemukan di Streamlit Secrets maupun Environment Variables."
+        )
+
+    return api_key
 
 # --- Pydantic Schemas ---
 class HybridEvaluation(BaseModel):
