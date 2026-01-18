@@ -18,12 +18,6 @@ from views import home, recommender, category
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# --- Debug Cloud / Cek secrets & CSV ---
-st.write("Secrets keys:", list(st.secrets.keys()))
-st.write("CWD:", os.getcwd())
-st.write("Files in CWD:", os.listdir(os.getcwd()))
-st.write("Files in data:", os.listdir(os.path.join(os.getcwd(), "data")))
-
 # --- Inisialisasi System ---
 @st.cache_resource
 def initialize_system():
