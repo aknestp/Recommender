@@ -18,24 +18,49 @@ from views import home, recommender, category
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# --- Debug Cloud / Cek secrets & CSV ---
 st.write("Secrets keys:", list(st.secrets.keys()))
+st.write("CWD:", os.getcwd())
+st.write("Files in CWD:", os.listdir(os.getcwd()))
+st.write("Files in data:", os.listdir(os.path.join(os.getcwd(), "data")))
 
 # --- Inisialisasi System ---
 @st.cache_resource
 def initialize_system():
     try:
+        # Load CSV
         df = load_local_data(DATA_FILE_PATH)
-        if df.empty: return None, None, None, None, None
+        if df.empty:
+            logger.warning("CSV kosong.")
+            return None, None, None, None, None
 
+        # Pre-processing & feature
         df = clean_and_handle_missing_values(df)
         df, tfidf_matrix = create_features(df)
         hybrid_sim = build_hybrid_model(df, tfidf_matrix)
         metrics = calculate_evaluation_metrics(df, hybrid_sim)
-        llm_tools = LLMTools()
+
+        # LLMTools (jika gagal, tetap lanjut)
+        try:
+            llm_tools = LLMTools()
+        except Exception as e:
+            logger.warning(f"LLMTools gagal diinisialisasi: {e}")
+            llm_tools = None
+
+        # Hybrid Recommender
         recommender_system = IntegratedRecommender(df, hybrid_sim)
-        cf_recommender = CollaborativeFilteringRecommender(data_path=DATA_FILE_PATH, num_users=500, random_seed=42)
-        
+
+        # CFRecommender (jika gagal, tetap lanjut)
+        try:
+            cf_recommender = CollaborativeFilteringRecommender(
+                data_path=DATA_FILE_PATH, num_users=500, random_seed=42
+            )
+        except Exception as e:
+            logger.warning(f"CFRecommender gagal diinisialisasi: {e}")
+            cf_recommender = None
+
         return df, recommender_system, llm_tools, metrics, cf_recommender
+
     except Exception as e:
         logger.error(f"Error initalization: {e}")
         return None, None, None, None, None
@@ -50,13 +75,14 @@ def main():
 
     inject_custom_css(st.session_state.dark_mode)
 
+    # Inisialisasi sistem
     df, recommender_sys, llm_tools, metrics, cf_recommender = initialize_system()
 
     if df is None:
-        st.error("Data tidak ditemukan. Pastikan file CSV tersedia.")
+        st.error("Sistem gagal diinisialisasi. Periksa API Key atau file CSV.")
         return
 
-    # Routing
+    # Routing halaman
     if st.session_state["current_page"] == "home":
         home.show(df, cf_recommender)
         
