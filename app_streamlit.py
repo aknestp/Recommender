@@ -1,7 +1,6 @@
 # app_streamlit.py
 
 import streamlit as st
-import os
 import logging
 from src.data_loader import load_local_data
 from src.preprocessing import clean_and_handle_missing_values
@@ -10,10 +9,6 @@ from src.modelling import build_hybrid_model, calculate_evaluation_metrics
 from src.integratedRecommender import IntegratedRecommender
 from src.evaluasiLlm import LLMTools
 from src.rekom import CollaborativeFilteringRecommender
-
-st.write("CWD:", os.getcwd())
-st.write("ROOT:", os.listdir(os.getcwd()))
-st.write("DATA:", os.listdir(os.path.join(os.getcwd(), "data")))
 
 # Import UI Components & Views
 from components.layout import inject_custom_css, ICON_PATH, DATA_FILE_PATH
