@@ -13,10 +13,11 @@ def load_local_data(file_path: str) -> pd.DataFrame:
         raise FileNotFoundError(f"Pastikan '{file_path}' ada di struktur proyek.")
         
     try:
-        df = pd.read_csv(path, sep=None, engine="python", encoding="utf-8")
+        df = pd.read_csv(file_path)
+        logger.info(f"Dataset berhasil dimuat! ✅ Ukuran dataset: {df.shape}")
         return df
     except Exception as e:
-        print("CSV LOAD ERROR:", e)
+        logger.error(f"Gagal memuat data: {e}")
         return pd.DataFrame()
 
 import pandas as pd
@@ -43,5 +44,3 @@ def load_data():
     return df
 
 df = load_data()
-
-
