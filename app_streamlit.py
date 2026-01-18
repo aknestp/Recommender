@@ -1,6 +1,7 @@
 # app_streamlit.py
 
 import streamlit as st
+import os
 import logging
 from src.data_loader import load_local_data
 from src.preprocessing import clean_and_handle_missing_values
